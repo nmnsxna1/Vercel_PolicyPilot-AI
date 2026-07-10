@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
@@ -9,8 +9,7 @@ import RiskGauge from '../components/RiskGauge'
 import Button from '../components/ui/button'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/table'
 import type { AnalyticsDashboardData, MonthlyTrend, RiskDistribution } from '../types'
-import html2canvas from 'html2canvas'
-import { jsPDF } from 'jspdf'
+
 
 const CHART_COLORS = { LOW: '#10b981', MEDIUM: '#f59e0b', HIGH: '#ef4444' }
 
@@ -41,8 +40,6 @@ function StatCard({ icon, label, value, subtitle, color, badge }: { icon: React.
 export default function AnalyticsDashboard() {
   const navigate = useNavigate()
   const { auth } = useAuth()
-  const reportRef = useRef<HTMLDivElement>(null)
-  const [exporting, setExporting] = useState(false)
   const [days, setDays] = useState(90)
 
   const { data, isLoading } = useQuery<AnalyticsDashboardData>({
@@ -79,38 +76,7 @@ export default function AnalyticsDashboard() {
     }))
   }, [riskDist])
 
-  const handleExportPDF = async () => {
-    if (!reportRef.current) return
-    setExporting(true)
-    try {
-      await new Promise(r => setTimeout(r, 500))
 
-      const canvas = await html2canvas(reportRef.current, {
-        backgroundColor: '#ffffff',
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        onclone: (doc) => {
-          doc.querySelectorAll('svg').forEach(svg => {
-            const rect = svg.getBoundingClientRect()
-            svg.setAttribute('width', String(rect.width))
-            svg.setAttribute('height', String(rect.height))
-          })
-        },
-      })
-      const imgData = canvas.toDataURL('image/png')
-      const pdf = new jsPDF('l', 'mm', 'a3')
-      const pageWidth = 420
-      const pageHeight = (canvas.height * pageWidth) / canvas.width
-      pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight)
-      pdf.save(`analytics-report-${new Date().toISOString().slice(0, 10)}.pdf`)
-    } catch (err) {
-      console.error('PDF export failed:', err)
-    } finally {
-      setExporting(false)
-    }
-  }
 
   if (isLoading) return <div className="p-6 text-[var(--text-secondary)]">Loading analytics...</div>
 
@@ -134,16 +100,16 @@ export default function AnalyticsDashboard() {
             <option value={180}>Last 6 months</option>
             <option value={365}>Last year</option>
           </select>
-          <Button onClick={handleExportPDF} disabled={exporting} className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => window.print()} className="flex items-center gap-2">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z" />
             </svg>
-            {exporting ? 'Exporting...' : 'Export PDF'}
+            Print
           </Button>
         </div>
       </div>
 
-      <div ref={reportRef} className="space-y-6">
+      <div className="space-y-6">
         {/* KPI Cards */}
         {data && (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
