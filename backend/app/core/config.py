@@ -1,3 +1,5 @@
+import os
+
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 
@@ -12,7 +14,7 @@ class Settings(BaseSettings):
     ai_api_key: str = ""
     ai_model: str = "gpt-4o"
 
-    upload_dir: str = "./uploads"
+    upload_dir: str = "/tmp/uploads" if os.environ.get("VERCEL") else "./uploads"
 
     mail_username: str = ""
     mail_password: str = ""

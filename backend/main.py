@@ -15,9 +15,16 @@ logging.basicConfig(level=logging.INFO, stream=sys.stdout, force=True)
 
 app = FastAPI(title="Policy Approval Platform", version="1.0.0")
 
+import os
+
+origins = ["http://localhost:5173", "http://localhost:3000"]
+for var in ("VERCEL_URL", "VERCEL_BRANCH_URL"):
+    val = os.environ.get(var)
+    if val:
+        origins.append(f"https://{val}")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
