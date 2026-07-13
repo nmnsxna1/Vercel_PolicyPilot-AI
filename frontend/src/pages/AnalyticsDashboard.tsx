@@ -185,7 +185,7 @@ export default function AnalyticsDashboard() {
                     outerRadius={100}
                     innerRadius={55}
                     dataKey="value"
-                    label={({ name, payload }: { name: string; payload?: { value: number; percentage?: number } }) => `${name}: ${(payload?.percentage ?? 0)}%`}
+                    label={(entry: any) => `${entry.name}: ${entry.payload?.percentage ?? 0}%`}
                     labelLine={{ strokeWidth: 1 }}
                   >
                     {riskData.map((entry, index) => (
