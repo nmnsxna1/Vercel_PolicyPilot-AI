@@ -35,20 +35,18 @@ app.include_router(applications.router)
 app.include_router(notifications.router)
 app.include_router(analytics.router)
 
+# Initialize database on import (works in both uvicorn and Vercel serverless)
+Base.metadata.create_all(bind=engine)
+db_init = SessionLocal()
+try:
+    AuthService.seed_users(db_init)
+finally:
+    db_init.close()
+
 try:
     app.mount("/uploads", StaticFiles(directory="./uploads"), name="uploads")
 except Exception:
     pass
-
-
-@app.on_event("startup")
-def startup():
-    Base.metadata.create_all(bind=engine)
-    db = SessionLocal()
-    try:
-        AuthService.seed_users(db)
-    finally:
-        db.close()
 
 
 @app.get("/health")
