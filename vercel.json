@@ -1,5 +1,5 @@
 {
-  "buildCommand": "mkdir -p api/app && cp -r backend/app/* api/app/ && cd frontend && npm install && npm run build",
+  "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },

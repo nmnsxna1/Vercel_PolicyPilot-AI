@@ -1,3 +1,9 @@
 backend/.env
 .env
 recording-script.md
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.db
+uploads/
