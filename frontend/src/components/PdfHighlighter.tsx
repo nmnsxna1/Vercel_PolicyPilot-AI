@@ -9,7 +9,7 @@ interface PdfHighlighterProps {
   risk?: RiskAssessment | null
 }
 
-export default function PdfHighlighter({ pdfUrl, applicationId, extractedData, validationFlags, risk }: PdfHighlighterProps) {
+export default function PdfHighlighter({ pdfUrl, extractedData, validationFlags, risk }: PdfHighlighterProps) {
   const [highlights, setHighlights] = useState<Array<{ text: string; selector: string; color: string; reason: string }>>([])
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [iframeLoaded, setIframeLoaded] = useState(false)
@@ -61,7 +61,7 @@ export default function PdfHighlighter({ pdfUrl, applicationId, extractedData, v
     if (extractedData.annual_income || extractedData.monthly_income) {
       const incomeText = extractedData.annual_income 
         ? `Annual Income ₹${extractedData.annual_income.toLocaleString()}`
-        : `Monthly Income ₹${extractedData.monthly_income.toLocaleString()}`
+        : `Monthly Income ₹${(extractedData.monthly_income ?? 0).toLocaleString()}`
       
       newHighlights.push({
         text: incomeText,
@@ -129,7 +129,7 @@ export default function PdfHighlighter({ pdfUrl, applicationId, extractedData, v
     existingHighlights.forEach(el => el.remove())
 
     // Add new highlights
-    highlights.forEach((highlight, index) => {
+    highlights.forEach((highlight) => {
       // Create highlight element
       const highlightEl = iframeDoc.createElement('div')
       highlightEl.className = `pdf-highlight ${highlight.selector.substring(1)}`

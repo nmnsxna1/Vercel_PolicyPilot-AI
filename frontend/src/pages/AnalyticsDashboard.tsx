@@ -5,7 +5,6 @@ import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import api from '../services/api'
 import { useAuth } from '../store/auth'
 import StatusBadge from '../components/StatusBadge'
-import RiskGauge from '../components/RiskGauge'
 import Button from '../components/ui/button'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/table'
 import type { AnalyticsDashboardData, MonthlyTrend, RiskDistribution } from '../types'
@@ -186,7 +185,7 @@ export default function AnalyticsDashboard() {
                     outerRadius={100}
                     innerRadius={55}
                     dataKey="value"
-                    label={({ name, percentage }) => `${name}: ${percentage}%`}
+                    label={({ name, payload }: { name: string; payload?: { value: number; percentage?: number } }) => `${name}: ${(payload?.percentage ?? 0)}%`}
                     labelLine={{ strokeWidth: 1 }}
                   >
                     {riskData.map((entry, index) => (

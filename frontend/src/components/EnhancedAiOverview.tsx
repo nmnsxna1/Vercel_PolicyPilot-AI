@@ -1,14 +1,6 @@
 import { useMemo } from 'react'
 import type { ApplicantDetails, ValidationFlag, RiskAssessment } from '../types'
 
-interface AssessmentMetrics {
-  completeness: { filled: number; total: number; percent: number }
-  incomeHealth: { ratio: number | null; status: string; detail: string }
-  creditStatus: { score: number | null; status: string }
-  riskFactors: { field: string; message: string; severity: string }[]
-  overall: { label: string; color: string; description: string }
-}
-
 const REQUIRED_FIELDS = [
   'full_name', 'dob', 'age', 'gender', 'pan', 'aadhaar',
   'email', 'phone', 'occupation', 'annual_income',
@@ -59,7 +51,7 @@ export default function EnhancedAiOverview({ details, flags, risk }: {
     }
 
     const creditScore = details.credit_score ? Number(details.credit_score) : null
-    let creditStatus = { score: null, status: 'unknown' }
+    let creditStatus: { score: number | null; status: string } = { score: null, status: 'unknown' }
     if (creditScore !== null) {
       if (creditScore >= 750) creditStatus = { score: creditScore, status: 'excellent' }
       else if (creditScore >= 700) creditStatus = { score: creditScore, status: 'good' }
@@ -121,7 +113,7 @@ export default function EnhancedAiOverview({ details, flags, risk }: {
 
   if (!details) return null
 
-  const colorClasses = {
+  const colorClasses: Record<string, { bg: string; text: string; border: string; badge: string }> = {
     green: { bg: 'bg-green-50 dark:bg-green-900/20', text: 'text-green-700 dark:text-green-300', border: 'border-green-200 dark:border-green-800', badge: 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200' },
     red: { bg: 'bg-red-50 dark:bg-red-900/20', text: 'text-red-700 dark:text-red-300', border: 'border-red-200 dark:border-red-800', badge: 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-200' },
     yellow: { bg: 'bg-yellow-50 dark:bg-yellow-900/20', text: 'text-yellow-700 dark:text-yellow-300', border: 'border-yellow-200 dark:border-yellow-800', badge: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200' },
